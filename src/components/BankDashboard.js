@@ -15,12 +15,16 @@ const banks = [
 
 // Function to fetch insights from Grok
 async function getGrokInsights(bankName) {
+  console.log('API Key:', process.env.NEXT_PUBLIC_GROK ? 'exists' : 'not found');
+  
   try {
     const response = await fetch('https://api.x.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GROKK}`
+        'Authorization': process.env.NEXT_PUBLIC_GROK.startsWith('Bearer') 
+          ? process.env.NEXT_PUBLIC_GROK 
+          : `Bearer ${process.env.NEXT_PUBLIC_GROK}`
       },
       body: JSON.stringify({
         messages: [
@@ -39,10 +43,17 @@ async function getGrokInsights(bankName) {
       })
     });
 
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
     const data = await response.json();
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Invalid response format from API');
+    }
     return data.choices[0].message;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error details:', error);
     return { content: 'Unable to fetch insights at this time.' };
   }
 }
@@ -65,6 +76,10 @@ const BankDashboard = () => {
       }));
     } catch (error) {
       console.error('Error fetching insights:', error);
+      setBankInsights(prev => ({
+        ...prev,
+        [bankName]: 'Error fetching insights. Please try again.'
+      }));
     }
     setLoading(prev => ({ ...prev, [bankName]: false }));
   };
