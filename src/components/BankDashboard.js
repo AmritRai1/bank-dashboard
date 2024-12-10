@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, RefreshCw } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 // List of banks
 const banks = [
