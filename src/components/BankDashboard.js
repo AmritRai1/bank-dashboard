@@ -20,7 +20,7 @@ async function getGrokInsights(bankName) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.GROKK}`
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_GROKK}`
       },
       body: JSON.stringify({
         messages: [
